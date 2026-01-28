@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>IBKR ULTIMATE TERMINAL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { background: #000; color: #fff; font-family: 'JetBrains Mono', monospace; -webkit-font-smoothing: antialiased; }
+        .card { background: #080808; border: 1px solid #1a1a1a; border-radius: 16px; padding: 18px; margin-bottom: 12px; position: relative; overflow: hidden; }
+        .up { color: #00ff88; }
+        .down { color: #ff3b3b; }
+        .header-glass { background: rgba(0,0,0,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid #1a1a1a; }
+        .badge-stop { font-size: 11px; padding: 5px 12px; border-radius: 8px; font-weight: bold; border: 1px solid; text-transform: uppercase; display: inline-block; }
+        .badge-free { background: rgba(59, 130, 246, 0.2); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.4); font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+        .weight-bar { position: absolute; bottom: 0; left: 0; height: 3px; background: #3b82f6; transition: width 0.6s ease; }
+    </style>
+</head>
+<body class="pb-10">
+
+    <div class="header-glass sticky top-0 z-50 p-5 mb-4">
+        <div class="max-w-md mx-auto flex justify-between items-end">
+            <div>
+                <p class="text-[8px] text-zinc-500 tracking-widest uppercase mb-1">Portfolio NAV <span id="sync-clock" class="lowercase text-white font-bold ml-2">--:--</span></p>
+                <div class="flex items-baseline gap-2">
+                    <h1 id="nav" class="text-2xl font-bold">---</h1>
+                    <span id="roi" class="text-xs font-bold up">---</span>
+                </div>
+            </div>
+            <div class="text-right">
+                <p class="text-[8px] text-zinc-500 tracking-widest uppercase mb-1">Total P&L Open</p>
+                <h1 id="totalPnL" class="text-2xl font-bold">---</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-md mx-auto px-4"><div id="grid" class="space-y-1"></div></div>
+
+    <script>
+        // PEGA AQUÍ TU NUEVA URL /exec
+        const API_URL = "https://script.google.com/macros/s/AKfycbySVTBHw-NBoN7m_7P-aQroeeahMXqpg4VSMW7hUDtDEbOC7KkmfGvFsUKOtZqyC9Gz/exec";
+
+        async function refresh() {
+            try {
+                const res = await fetch(API_URL);
+                const data = await res.json();
+                const ahora = new Date();
+                document.getElementById('sync-clock').innerText = `act. ${ahora.getHours()}:${ahora.getMinutes().toString().padStart(2,'0')}:${ahora.getSeconds().toString().padStart(2,'0')}`;
+                
+                document.getElementById('nav').innerText = data.nav;
+                document.getElementById('roi').innerText = `+${data.roi}%`;
+                
+                const tpnl = parseFloat(data.totalPnLCash);
+                const pnlEl = document.getElementById('totalPnL');
+                pnlEl.innerText = (tpnl >= 0 ? '+$' : '-$') + Math.abs(tpnl).toLocaleString(undefined, {minimumFractionDigits: 2});
+                pnlEl.className = `text-2xl font-bold ${tpnl >= 0 ? 'up' : 'down'}`;
+
+                const totalValue = data.activos.reduce((sum, a) => sum + (parseFloat(a.currentPrice) * parseFloat(a.qty)), 0);
+                const grid = document.getElementById('grid');
+                grid.innerHTML = "";
+
+                data.activos.forEach(a => {
+                    const totalUp = parseFloat(a.pnlCash) >= 0;
+                    const dailyUp = parseFloat(a.dailyChange) >= 0;
+                    const weight = ((parseFloat(a.currentPrice) * parseFloat(a.qty)) / totalValue * 100).toFixed(1);
+                    
+                    const card = document.createElement('div');
+                    card.className = "card shadow-xl";
+                    card.innerHTML = `
+                        <div class="weight-bar" style="width: ${weight}%"></div>
+                        <div class="flex justify-between items-start relative z-10">
+                            <div class="space-y-1">
+                                <div class="flex items-center gap-2">
+                                    <h3 class="text-xl font-bold">${a.ticker}</h3>
+                                    ${a.isFreeRoll ? `<span class="badge-free">🛡️ FREE ROLL</span>` : ''}
+                                    <span class="text-[9px] text-zinc-500 font-normal">${weight}%</span>
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-[12px] font-bold uppercase ${totalUp ? 'up' : 'down'}">P&L OPEN: ${totalUp ? '+' : '-'}$${Math.abs(a.pnlCash).toFixed(2)}</span>
+                                    <span class="text-[11px] text-white font-bold uppercase">INVERTIDO: $${(parseFloat(a.qty) * parseFloat(a.entry)).toFixed(0)}</span>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xl font-bold tracking-tighter">
+                                    $${a.currentPrice}
+                                    <span class="text-[12px] ${dailyUp ? 'up' : 'down'} ml-2 font-bold">${dailyUp ? '+' : ''}${a.dailyChange}%</span>
+                                </div>
+                                <div class="text-[12px] font-bold ${totalUp ? 'up' : 'down'} mt-1 tracking-tighter">TOTAL: ${a.pnlPercent}%</div>
+                            </div>
+                        </div>
+                        ${a.stopDist ? `<div class="mt-5 pt-3 border-t border-zinc-900/50 relative z-10">
+                            <span class="badge-stop ${parseFloat(a.stopDist) < 2.5 ? 'down animate-pulse' : 'up'}" style="background: rgba(0,0,0,0.4); border-color: currentColor;">🛡️ STOP: ${a.stopDist}%</span>
+                        </div>` : ''}
+                    `;
+                    grid.appendChild(card);
+                });
+            } catch (e) { console.error(e); }
+        }
+        refresh();
+        setInterval(refresh, 30000);
+    </script>
+</body>
+</html>
