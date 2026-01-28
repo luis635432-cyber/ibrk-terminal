@@ -15,6 +15,8 @@
         .badge-stop { font-size: 11px; padding: 5px 12px; border-radius: 8px; font-weight: bold; border: 1px solid; text-transform: uppercase; display: inline-block; }
         .badge-free { background: rgba(59, 130, 246, 0.2); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.4); font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
         .weight-bar { position: absolute; bottom: 0; left: 0; height: 3px; background: #3b82f6; transition: width 0.6s ease; }
+        /* Estilo para el estado del mercado */
+        .mkt-status { font-size: 9px; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle; }
     </style>
 </head>
 <body class="pb-10">
@@ -38,13 +40,27 @@
     <div class="max-w-md mx-auto px-4"><div id="grid" class="space-y-1"></div></div>
 
     <script>
-        // PEGA AQUÍ TU NUEVA URL /exec
         const API_URL = "https://script.google.com/macros/s/AKfycbySVTBHw-NBoN7m_7P-aQroeeahMXqpg4VSMW7hUDtDEbOC7KkmfGvFsUKOtZqyC9Gz/exec";
+
+        // Función para calcular la fase del mercado (Hora España)
+        function getMarketStatus() {
+            const now = new Date();
+            const time = now.getHours() + now.getMinutes()/60;
+            // Pre-market: 10:00 a 15:30
+            if (time >= 10 && time < 15.5) return { label: 'PRE', color: 'bg-orange-500/20 text-orange-500' };
+            // Mercado Abierto: 15:30 a 22:00
+            if (time >= 15.5 && time < 22) return { label: 'LIVE', color: 'bg-green-500/20 text-green-500' };
+            // After-hours: 22:00 a 02:00
+            if (time >= 22 || time < 2) return { label: 'AFT', color: 'bg-blue-500/20 text-blue-500' };
+            // Cerrado
+            return { label: 'CLOSED', color: 'bg-zinc-800 text-zinc-500' };
+        }
 
         async function refresh() {
             try {
                 const res = await fetch(API_URL);
                 const data = await res.json();
+                const mkt = getMarketStatus();
                 const ahora = new Date();
                 document.getElementById('sync-clock').innerText = `act. ${ahora.getHours()}:${ahora.getMinutes().toString().padStart(2,'0')}:${ahora.getSeconds().toString().padStart(2,'0')}`;
                 
@@ -72,7 +88,7 @@
                         <div class="flex justify-between items-start relative z-10">
                             <div class="space-y-1">
                                 <div class="flex items-center gap-2">
-                                    <h3 class="text-xl font-bold">${a.ticker}</h3>
+                                    <h3 class="text-xl font-bold tracking-tight">${a.ticker}</h3>
                                     ${a.isFreeRoll ? `<span class="badge-free">🛡️ FREE ROLL</span>` : ''}
                                     <span class="text-[9px] text-zinc-500 font-normal">${weight}%</span>
                                 </div>
@@ -84,12 +100,14 @@
                             <div class="text-right">
                                 <div class="text-xl font-bold tracking-tighter">
                                     $${a.currentPrice}
-                                    <span class="text-[12px] ${dailyUp ? 'up' : 'down'} ml-2 font-bold">${dailyUp ? '+' : ''}${a.dailyChange}%</span>
+                                    <span class="text-[12px] ${dailyUp ? 'up' : 'down'} ml-1 font-bold">${dailyUp ? '+' : ''}${a.dailyChange}%</span>
+                                    <span class="mkt-status ${mkt.color}">${mkt.label}</span>
                                 </div>
-                                <div class="text-[12px] font-bold ${totalUp ? 'up' : 'down'} mt-1 tracking-tighter">TOTAL: ${a.pnlPercent}%</div>
+                                <div class="text-[12px] font-bold ${totalUp ? 'up' : 'down'} mt-1 tracking-tighter text-right">TOTAL: ${a.pnlPercent}%</div>
                             </div>
                         </div>
-                        ${a.stopDist ? `<div class="mt-5 pt-3 border-t border-zinc-900/50 relative z-10">
+                        ${a.stopDist ? `
+                        <div class="mt-5 pt-3 border-t border-zinc-900/50 relative z-10">
                             <span class="badge-stop ${parseFloat(a.stopDist) < 2.5 ? 'down animate-pulse' : 'up'}" style="background: rgba(0,0,0,0.4); border-color: currentColor;">🛡️ STOP: ${a.stopDist}%</span>
                         </div>` : ''}
                     `;
