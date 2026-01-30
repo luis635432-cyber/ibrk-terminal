@@ -13,19 +13,13 @@
         .up { color: #00ff88; }
         .down { color: #ff3b3b; }
         .header-glass { background: rgba(0,0,0,0.98); backdrop-filter: blur(20px); border-bottom: 1px solid #1a1a1a; }
-        
-        /* Badge de Stop más grande y visible */
         .badge-stop { font-size: 12px; padding: 6px 12px; border-radius: 10px; font-weight: 800; border: 1.5px solid; display: flex; align-items: center; gap: 6px; }
-        
         .filter-btn { font-size: 10px; font-weight: 800; padding: 8px 18px; border-radius: 14px; border: 1px solid #222; color: #555; transition: all 0.2s; }
         .filter-btn.active { background: #fff; color: #000; border-color: #fff; }
-        
         .blur-val { transition: filter 0.3s ease; }
         body.is-private .blur-val { filter: blur(10px); pointer-events: none; }
-        
-        /* Animación para riesgo alto */
         .danger-pulse { animation: pulse-red 2s infinite; }
-        @keyframes pulse-red { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        @keyframes pulse-red { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     </style>
 </head>
 <body class="pb-10">
@@ -58,14 +52,15 @@
                 </div>
             </div>
 
-            <div class="flex justify-between items-center mb-2">
+            <div class="flex justify-between items-center">
                 <div>
-                    <p class="text-[9px] text-zinc-600 uppercase tracking-widest mb-1">Total Portfolio Net</p>
+                    <p class="text-[9px] text-zinc-600 uppercase tracking-widest mb-1">Total Net Portfolio</p>
                     <h2 id="totalCombined" class="text-xl font-bold blur-val tracking-tighter">---</h2>
                 </div>
                 <div class="flex gap-1">
                     <button onclick="setFilter('ALL')" id="btn-ALL" class="filter-btn active">ALL</button>
                     <button onclick="setFilter('RISK')" id="btn-RISK" class="filter-btn">RISK</button>
+                    <button onclick="setFilter('FREE')" id="btn-FREE" class="filter-btn">FREE</button>
                 </div>
             </div>
         </div>
@@ -90,7 +85,7 @@
                 const res = await fetch(API_URL);
                 currentData = await res.json();
                 renderGrid(currentData);
-            } catch (e) { console.error(e); }
+            } catch (e) { console.error("Error API:", e); }
         }
 
         function renderGrid(data) {
@@ -103,19 +98,19 @@
             const format = (v) => (v >= 0 ? '+$' : '-$') + Math.abs(v).toLocaleString(undefined, {minimumFractionDigits: 2});
             
             document.getElementById('totalPnLOpen').innerText = format(openVal);
-            document.getElementById('totalPnLOpen').className = `text-xl font-bold blur-val tracking-tighter ${openVal >= 0 ? 'up' : 'down'}`;
+            document.getElementById('totalPnLOpen').className = `text-xl font-bold blur-val ${openVal >= 0 ? 'up' : 'down'}`;
             document.getElementById('totalPnLClosed').innerText = format(closedVal);
-            document.getElementById('totalPnLClosed').className = `text-xl font-bold blur-val tracking-tighter ${closedVal >= 0 ? 'up' : 'down'}`;
-            
-            // NET PROFIT MÁS GRANDE
+            document.getElementById('totalPnLClosed').className = `text-xl font-bold blur-val ${closedVal >= 0 ? 'up' : 'down'}`;
             document.getElementById('totalCombined').innerText = format(netVal);
-            document.getElementById('totalCombined').className = `text-xl font-bold blur-val tracking-tighter ${netVal >= 0 ? 'up' : 'down'}`;
+            document.getElementById('totalCombined').className = `text-xl font-bold blur-val ${netVal >= 0 ? 'up' : 'down'}`;
 
             const grid = document.getElementById('grid');
             grid.innerHTML = "";
 
+            // LÓGICA DE FILTRADO RECUPERADA
             const filtered = data.activos.filter(a => {
                 if(activeFilter === 'RISK') return !a.isFreeRoll;
+                if(activeFilter === 'FREE') return a.isFreeRoll;
                 return true;
             });
 
@@ -147,12 +142,10 @@
                                 <i data-lucide="shield-check" class="w-4 h-4"></i>
                                 ${a.stopDist}%
                             </div>
-                            
                             <div class="flex flex-col">
                                 <span class="text-[9px] text-zinc-600 uppercase font-black tracking-widest mb-0.5">Initial Risk</span>
                                 <span class="text-[13px] font-bold blur-val tracking-tighter text-zinc-300">-$${Math.abs(parseFloat(a.riskCash)).toFixed(2)}</span>
                             </div>
-                            
                             <div class="flex flex-col">
                                 <span class="text-[9px] text-zinc-600 uppercase font-black tracking-widest mb-0.5">PnL @ Stop</span>
                                 <span class="text-[13px] font-bold blur-val tracking-tighter ${pnlStopUp ? 'up' : 'down'}">
@@ -160,12 +153,10 @@
                                 </span>
                             </div>
                         </div>
-                        <i data-lucide="chevron-right" class="w-4 h-4 text-zinc-800"></i>
                     </div>
                 `;
                 grid.appendChild(card);
             });
-            // ACTIVAR ICONOS LUCIDE
             lucide.createIcons();
         }
         refresh();
