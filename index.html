@@ -14,7 +14,7 @@
         .header-glass { background: rgba(0,0,0,0.98); backdrop-filter: blur(15px); border-bottom: 1px solid #1a1a1a; }
         .badge-stop { font-size: 10px; padding: 3px 8px; border-radius: 6px; font-weight: bold; border: 1px solid; }
         .filter-btn { font-size: 9px; font-weight: 800; padding: 6px 14px; border-radius: 10px; border: 1px solid #222; color: #555; }
-        .filter-btn.active { background: #fff; color: #000; }
+        .filter-btn.active { background: #fff; color: #000; border-color: #fff; }
         .blur-val { transition: filter 0.3s; }
         body.is-private .blur-val { filter: blur(8px); pointer-events: none; }
     </style>
@@ -36,11 +36,11 @@
             
             <div class="grid grid-cols-2 gap-3 mb-6">
                 <div class="bg-zinc-900/40 p-4 rounded-2xl border border-white/5 text-right">
-                    <p class="text-[7px] text-zinc-500 uppercase tracking-[0.2em] mb-1">Unrealized (N5)</p>
+                    <p class="text-[7px] text-zinc-500 uppercase tracking-[0.2em] mb-1">Unrealized (E5)</p>
                     <h2 id="totalPnLOpen" class="text-xl font-bold blur-val tracking-tighter">---</h2>
                 </div>
                 <div class="bg-zinc-900/40 p-4 rounded-2xl border border-white/5 text-right">
-                    <p class="text-[7px] text-zinc-500 uppercase tracking-[0.2em] mb-1">Realized (O5)</p>
+                    <p class="text-[7px] text-zinc-500 uppercase tracking-[0.2em] mb-1">Realized (F5)</p>
                     <h2 id="totalPnLClosed" class="text-xl font-bold blur-val tracking-tighter">---</h2>
                 </div>
             </div>
@@ -59,7 +59,6 @@
     <div class="max-w-md mx-auto px-4 mt-4"><div id="grid" class="space-y-1"></div></div>
 
     <script>
-        // TU URL DE APPS SCRIPT
         const API_URL = "https://script.google.com/macros/s/AKfycbySVTBHw-NBoN7m_7P-aQroeeahMXqpg4VSMW7hUDtDEbOC7KkmfGvFsUKOtZqyC9Gz/exec";
         let currentData = null;
         let activeFilter = 'ALL';
@@ -86,12 +85,10 @@
             document.getElementById('nav').innerText = data.nav || '0.0000';
             document.getElementById('roi').innerText = `+${data.roi || '0.00'}%`;
             
-            // FUNCIÓN PARA LIMPIAR NÚMEROS (Previene el NaN)
+            // Lógica de Formateo Blindada (Previene NaN)
             const parseNum = (val) => {
-                if (val === null || val === undefined) return 0;
-                // Si es string, quita todo lo que no sea número, punto o signo menos
-                let clean = typeof val === 'string' ? val.replace(/[^\d.-]/g, '') : val;
-                return parseFloat(clean) || 0;
+                const n = parseFloat(val);
+                return isNaN(n) ? 0 : n;
             };
 
             const openVal = parseNum(data.totalPnLOpen);
@@ -143,6 +140,7 @@
                             <div class="flex flex-col"><span class="text-[6px] text-zinc-500 uppercase font-black">Initial Risk</span><span class="text-[11px] font-bold blur-val tracking-tighter text-zinc-300">-$${Math.abs(parseFloat(a.riskCash)).toFixed(2)}</span></div>
                             <div class="flex flex-col"><span class="text-[6px] text-zinc-500 uppercase font-black">PnL @ Stop</span><span class="text-[11px] font-bold blur-val tracking-tighter ${pnlStopUp ? 'up' : 'down'}">${format(parseFloat(a.pnlAtStop))}</span></div>
                         </div>
+                        <span class="text-[8px] text-zinc-700 font-bold uppercase tracking-tighter">U: ${a.qty}</span>
                     </div>
                 `;
                 grid.appendChild(card);
