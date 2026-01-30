@@ -75,8 +75,10 @@
 
         function setFilter(f) {
             activeFilter = f;
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            // Actualizar UI de botones
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(`btn-${f}`).classList.add('active');
+            // Re-renderizar con los datos actuales
             if(currentData) renderGrid(currentData);
         }
 
@@ -107,10 +109,13 @@
             const grid = document.getElementById('grid');
             grid.innerHTML = "";
 
-            // LÓGICA DE FILTRADO RECUPERADA
+            // LÓGICA DE FILTRADO REFORZADA
             const filtered = data.activos.filter(a => {
-                if(activeFilter === 'RISK') return !a.isFreeRoll;
-                if(activeFilter === 'FREE') return a.isFreeRoll;
+                // Comprobamos si es Free Roll (puede venir como boolean o como texto)
+                const isFree = (a.isFreeRoll === true || a.isFreeRoll === "true" || a.isFreeRoll === "FREE ROLL");
+                
+                if(activeFilter === 'RISK') return !isFree;
+                if(activeFilter === 'FREE') return isFree;
                 return true;
             });
 
@@ -118,6 +123,7 @@
                 const totalUp = parseFloat(a.pnlCash) >= 0;
                 const pnlStopUp = parseFloat(a.pnlAtStop) >= 0;
                 const isDanger = parseFloat(a.stopDist) < 3;
+                const isFree = (a.isFreeRoll === true || a.isFreeRoll === "true" || a.isFreeRoll === "FREE ROLL");
                 
                 const card = document.createElement('div');
                 card.className = "card";
@@ -126,7 +132,7 @@
                         <div>
                             <div class="flex items-center gap-2 mb-1">
                                 <h3 class="font-bold text-xl tracking-tight">${a.ticker}</h3>
-                                ${a.isFreeRoll ? '<span class="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded-lg border border-blue-500/20 font-bold">FREE ROLL</span>' : ''}
+                                ${isFree ? '<span class="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded-lg border border-blue-500/20 font-bold">FREE ROLL</span>' : ''}
                             </div>
                             <span class="text-sm font-bold ${totalUp ? 'up' : 'down'} blur-val uppercase tracking-tighter">PnL: $${Math.abs(parseFloat(a.pnlCash)).toFixed(2)}</span>
                         </div>
