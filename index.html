@@ -4,76 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DOTS ELITE TERMINAL</title>
-    <link rel="apple-touch-icon" href="icon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body { background: #000; color: #fff; font-family: 'JetBrains Mono', monospace; -webkit-font-smoothing: antialiased; }
-        .card { background: rgba(12, 12, 12, 0.95); border: 1px solid #1a1a1a; border-radius: 24px; padding: 20px; margin-bottom: 12px; position: relative; overflow: hidden; }
+        .card { background: #0c0c0c; border: 1px solid #1a1a1a; border-radius: 20px; padding: 18px; margin-bottom: 10px; }
         .up { color: #00ff88; }
         .down { color: #ff3b3b; }
-        .header-glass { background: rgba(0,0,0,0.98); backdrop-filter: blur(20px); border-bottom: 1px solid #1a1a1a; }
-        .weight-bar { position: absolute; bottom: 0; left: 0; height: 3px; background: #3b82f6; }
-        
-        /* Filtros Tácticos */
-        .filter-btn { font-size: 10px; font-weight: 800; padding: 8px 18px; border-radius: 14px; border: 1px solid #1a1a1a; color: #52525b; transition: all 0.2s; }
-        .filter-btn.active { background: #fff; color: #000; border-color: #fff; }
-        
-        /* Modo Privacidad */
-        .blur-val { transition: filter 0.3s ease; }
+        .header-glass { background: rgba(0,0,0,0.98); backdrop-filter: blur(15px); border-bottom: 1px solid #1a1a1a; }
+        .badge-stop { font-size: 10px; padding: 3px 8px; border-radius: 6px; font-weight: bold; border: 1px solid; }
+        .filter-btn { font-size: 9px; font-weight: 800; padding: 6px 14px; border-radius: 10px; border: 1px solid #222; color: #555; }
+        .filter-btn.active { background: #fff; color: #000; }
+        .blur-val { transition: filter 0.3s; }
         body.is-private .blur-val { filter: blur(8px); pointer-events: none; }
-        
-        /* Salud de Cartera */
-        .health-bg { background: #111; height: 4px; width: 100%; border-radius: 2px; margin-top: 6px; overflow: hidden; }
-        .health-fill { height: 100%; background: linear-gradient(90deg, #3b82f6, #00ff88); transition: width 1s ease; }
-        
-        .badge-free { background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); font-size: 9px; padding: 2px 8px; border-radius: 5px; font-weight: bold; }
-        .badge-stop { font-size: 10px; padding: 4px 10px; border-radius: 8px; font-weight: bold; border: 1px solid; text-transform: uppercase; }
-        .mkt-status { font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 4px; margin-left: 6px; }
     </style>
 </head>
 <body class="pb-10">
 
-    <div class="header-glass sticky top-0 z-50 p-6 mb-2">
+    <div class="header-glass sticky top-0 z-50 p-6">
         <div class="max-w-md mx-auto">
             <div class="flex justify-between items-start mb-6">
                 <div>
-                    <p class="text-[8px] text-zinc-600 tracking-[0.2em] uppercase mb-1">Dots Elite System <span id="sync-clock" class="text-white font-bold ml-2">--:--</span></p>
+                    <p class="text-[8px] text-zinc-600 uppercase tracking-widest mb-1">Dots Elite System <span id="sync-clock" class="text-white font-bold ml-2">--:--</span></p>
                     <div class="flex items-baseline gap-2">
                         <h1 id="nav" class="text-3xl font-bold tracking-tighter">---</h1>
                         <span id="roi" class="text-sm font-bold up">---</span>
                     </div>
                 </div>
-                <button onclick="togglePrivacy()" class="p-3 bg-zinc-900 rounded-2xl border border-zinc-800 active:scale-95 transition-all">
-                    <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-500"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                </button>
+                <button onclick="document.body.classList.toggle('is-private')" class="p-2 bg-zinc-900 border border-zinc-800 rounded-xl text-[9px] font-bold text-zinc-500 uppercase">Privacidad</button>
             </div>
             
-            <div class="flex justify-between items-end mb-6">
-                <div class="w-full mr-8">
-                    <p class="text-[8px] text-zinc-500 tracking-widest uppercase">Portfolio Security Score</p>
-                    <div class="health-bg"><div id="health-bar" class="health-fill" style="width: 0%"></div></div>
-                    
-                    <p class="text-[8px] text-zinc-600 tracking-widest uppercase mt-4">Total Net (Open + Realized)</p>
-                    <h2 id="totalCombined" class="text-sm font-bold blur-val tracking-tight">---</h2>
+            <div class="grid grid-cols-2 gap-3 mb-6">
+                <div class="bg-zinc-900/40 p-4 rounded-2xl border border-white/5 text-right">
+                    <p class="text-[7px] text-zinc-500 uppercase tracking-[0.2em] mb-1">Unrealized (N5)</p>
+                    <h2 id="totalPnLOpen" class="text-xl font-bold blur-val tracking-tighter">---</h2>
                 </div>
-                
-                <div class="flex gap-4">
-                    <div class="text-right whitespace-nowrap">
-                        <p class="text-[8px] text-zinc-500 tracking-widest uppercase">Open (N5)</p>
-                        <h1 id="totalPnLOpen" class="text-lg font-bold blur-val tracking-tighter">---</h1>
-                    </div>
-                    <div class="text-right whitespace-nowrap border-l border-zinc-800 pl-4">
-                        <p class="text-[8px] text-zinc-500 tracking-widest uppercase">Realized (O5)</p>
-                        <h1 id="totalPnLClosed" class="text-lg font-bold blur-val tracking-tighter">---</h1>
-                    </div>
+                <div class="bg-zinc-900/40 p-4 rounded-2xl border border-white/5 text-right">
+                    <p class="text-[7px] text-zinc-500 uppercase tracking-[0.2em] mb-1">Realized (O5)</p>
+                    <h2 id="totalPnLClosed" class="text-xl font-bold blur-val tracking-tighter">---</h2>
                 </div>
             </div>
 
-            <div class="flex gap-2">
-                <button onclick="setFilter('ALL')" id="btn-ALL" class="filter-btn active">ALL</button>
-                <button onclick="setFilter('RISK')" id="btn-RISK" class="filter-btn">RISK</button>
-                <button onclick="setFilter('FREE')" id="btn-FREE" class="filter-btn">FREE</button>
+            <div class="flex justify-between items-center bg-zinc-900/20 p-2 rounded-lg">
+                <div id="totalCombined" class="text-[10px] font-bold blur-val uppercase tracking-widest">---</div>
+                <div class="flex gap-1">
+                    <button onclick="setFilter('ALL')" id="btn-ALL" class="filter-btn active">ALL</button>
+                    <button onclick="setFilter('RISK')" id="btn-RISK" class="filter-btn">RISK</button>
+                    <button onclick="setFilter('FREE')" id="btn-FREE" class="filter-btn">FREE</button>
+                </div>
             </div>
         </div>
     </div>
@@ -81,16 +59,10 @@
     <div class="max-w-md mx-auto px-4 mt-4"><div id="grid" class="space-y-1"></div></div>
 
     <script>
+        // URL ACTUALIZADA
         const API_URL = "https://script.google.com/macros/s/AKfycbySVTBHw-NBoN7m_7P-aQroeeahMXqpg4VSMW7hUDtDEbOC7KkmfGvFsUKOtZqyC9Gz/exec";
         let currentData = null;
         let activeFilter = 'ALL';
-
-        function togglePrivacy() {
-            document.body.classList.toggle('is-private');
-            const icon = document.getElementById('eye-icon');
-            const isPrivate = document.body.classList.contains('is-private');
-            icon.style.color = isPrivate ? '#00ff88' : '#52525b';
-        }
 
         function setFilter(f) {
             activeFilter = f;
@@ -99,50 +71,45 @@
             if(currentData) renderGrid(currentData);
         }
 
-        function getMarketStatus() {
-            const now = new Date();
-            const hour = now.getHours() + now.getMinutes()/60;
-            if (hour >= 10 && hour < 15.5) return { label: 'PRE', color: 'bg-orange-500/20 text-orange-500' };
-            if (hour >= 15.5 && hour < 22) return { label: 'LIVE', color: 'bg-green-500/20 text-green-500' };
-            if (hour >= 22 || hour < 2) return { label: 'AFT', color: 'bg-blue-500/20 text-blue-500' };
-            return { label: 'CLOSED', color: 'bg-zinc-800 text-zinc-500' };
-        }
-
         async function refresh() {
             try {
                 const res = await fetch(API_URL);
                 currentData = await res.json();
                 renderGrid(currentData);
-            } catch (e) { console.error("Error API:", e); }
+            } catch (e) { console.error("Error en Fetch:", e); }
         }
 
         function renderGrid(data) {
-            const mkt = getMarketStatus();
-            document.getElementById('sync-clock').innerText = new Date().toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+            const ahora = new Date();
+            document.getElementById('sync-clock').innerText = ahora.toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
             
             document.getElementById('nav').innerText = data.nav || '0.0000';
             document.getElementById('roi').innerText = `+${data.roi || '0.00'}%`;
             
-            // Cálculos de Cabecera (Desde N5 y O5)
-            const openVal = Number(data.totalPnLOpen) || 0;
-            const closedVal = Number(data.totalPnLClosed) || 0;
-            const combinedVal = openVal + closedVal;
+            // LIMPIEZA DE DATOS (N5 y O5)
+            const parseNum = (val) => {
+                if (!val) return 0;
+                let clean = String(val).replace(/[^\d.-]/g, '');
+                return parseFloat(clean) || 0;
+            };
 
+            const openVal = parseNum(data.totalPnLOpen);
+            const closedVal = parseNum(data.totalPnLClosed);
+            const netVal = openVal + closedVal;
+
+            const format = (v) => (v >= 0 ? '+$' : '-$') + Math.abs(v).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            
             const openEl = document.getElementById('totalPnLOpen');
-            openEl.innerText = (openVal >= 0 ? '+$' : '-$') + Math.abs(openVal).toLocaleString(undefined, {minimumFractionDigits: 2});
-            openEl.className = `text-lg font-bold blur-val tracking-tighter ${openVal >= 0 ? 'up' : 'down'}`;
-
+            openEl.innerText = format(openVal);
+            openEl.className = `text-xl font-bold blur-val tracking-tighter ${openVal >= 0 ? 'up' : 'down'}`;
+            
             const closedEl = document.getElementById('totalPnLClosed');
-            closedEl.innerText = (closedVal >= 0 ? '+$' : '-$') + Math.abs(closedVal).toLocaleString(undefined, {minimumFractionDigits: 2});
-            closedEl.className = `text-lg font-bold blur-val tracking-tighter ${closedVal >= 0 ? 'up' : 'down'}`;
+            closedEl.innerText = format(closedVal);
+            closedEl.className = `text-xl font-bold blur-val tracking-tighter ${closedVal >= 0 ? 'up' : 'down'}`;
 
             const combinedEl = document.getElementById('totalCombined');
-            combinedEl.innerText = (combinedVal >= 0 ? 'NET: +$' : 'NET: -$') + Math.abs(combinedVal).toLocaleString(undefined, {minimumFractionDigits: 2});
-            combinedEl.className = `text-sm font-bold blur-val tracking-tight ${combinedVal >= 0 ? 'up' : 'down'}`;
-
-            // Salud de Cartera
-            const freeCount = data.activos.filter(a => a.isFreeRoll).length;
-            document.getElementById('health-bar').style.width = `${(freeCount / (data.activos.length || 1)) * 100}%`;
+            combinedEl.innerText = `NET PROFIT: ${format(netVal)}`;
+            combinedEl.className = `text-[10px] font-bold blur-val uppercase tracking-widest ${netVal >= 0 ? 'up' : 'down'}`;
 
             const grid = document.getElementById('grid');
             grid.innerHTML = "";
@@ -155,52 +122,26 @@
 
             filtered.forEach(a => {
                 const totalUp = parseFloat(a.pnlCash) >= 0;
-                const dailyUp = parseFloat(a.dailyChange) >= 0;
                 const pnlStopUp = parseFloat(a.pnlAtStop) >= 0;
-                const weight = ((parseFloat(a.currentPrice) * parseFloat(a.qty)) / (parseFloat(data.nav) * 100)).toFixed(1);
-                
                 const card = document.createElement('div');
-                card.className = "card shadow-2xl";
+                card.className = "card";
                 card.innerHTML = `
-                    <div class="weight-bar" style="width: ${weight * 5}%"></div>
-                    <div class="flex justify-between items-start relative z-10">
-                        <div class="space-y-3">
-                            <div class="flex items-center gap-2">
-                                <h3 class="text-xl font-bold tracking-tight">${a.ticker}</h3>
-                                ${a.isFreeRoll ? `<span class="badge-free">🛡️ FREE ROLL</span>` : ''}
-                            </div>
-                            <div class="flex flex-col">
-                                <span class="text-[13px] font-bold ${totalUp ? 'up' : 'down'} blur-val uppercase tracking-tight">PnL: ${totalUp ? '+' : '-'}$${Math.abs(a.pnlCash)}</span>
-                                <span class="text-[9px] text-zinc-600 font-bold blur-val uppercase tracking-tighter">Cost: $${(a.qty * a.entry).toFixed(0)}</span>
-                            </div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="font-bold text-lg leading-tight">${a.ticker} ${a.isFreeRoll ? '🛡️' : ''}</h3>
+                            <span class="text-sm font-bold ${totalUp ? 'up' : 'down'} blur-val uppercase">PnL: $${Math.abs(a.pnlCash)}</span>
                         </div>
                         <div class="text-right">
-                            <div class="text-xl font-bold tracking-tighter flex items-center justify-end">
-                                $${a.currentPrice}
-                                <span class="text-[12px] ${dailyUp ? 'up' : 'down'} ml-1.5 font-bold">${dailyUp ? '+' : ''}${a.dailyChange}%</span>
-                                <span class="mkt-status ${mkt.color}">${mkt.label}</span>
-                            </div>
-                            <div class="text-[12px] font-bold ${totalUp ? 'up' : 'down'} mt-1 tracking-tighter">TOTAL: ${a.pnlPercent}%</div>
+                            <div class="font-bold text-lg leading-tight">$${a.currentPrice}</div>
+                            <div class="text-xs font-bold ${totalUp ? 'up' : 'down'}">${a.pnlPercent}%</div>
                         </div>
                     </div>
-                    
-                    <div class="mt-6 pt-4 border-t border-white/5 flex justify-between items-end relative z-10">
-                        <div class="flex items-center gap-4">
-                            <span class="badge-stop ${parseFloat(a.stopDist) < 3 ? 'down animate-pulse' : 'up'}" style="background: rgba(0,0,0,0.4); border-color: currentColor;">
-                                🛡️ ${a.stopDist}%
-                            </span>
-                            <div class="flex flex-col">
-                                <span class="text-[7px] text-zinc-600 uppercase font-bold tracking-widest">Initial Risk</span>
-                                <span class="text-[11px] font-bold text-zinc-400 blur-val">-$${Math.abs(a.riskCash)}</span>
-                            </div>
-                            <div class="flex flex-col">
-                                <span class="text-[7px] text-zinc-600 uppercase font-bold tracking-widest">PnL @ Stop</span>
-                                <span class="text-[11px] font-bold blur-val ${pnlStopUp ? 'up' : 'down'}">
-                                    ${pnlStopUp ? '+' : '-'}$${Math.abs(a.pnlAtStop)}
-                                </span>
-                            </div>
+                    <div class="mt-4 pt-4 border-t border-white/5 flex justify-between items-center">
+                        <div class="flex gap-4">
+                            <span class="badge-stop ${parseFloat(a.stopDist) < 3 ? 'down' : 'up'} border-current">🛡️ ${a.stopDist}%</span>
+                            <div class="flex flex-col"><span class="text-[6px] text-zinc-500 uppercase font-black">Initial Risk</span><span class="text-[11px] font-bold blur-val tracking-tighter text-zinc-300">-$${Math.abs(a.riskCash)}</span></div>
+                            <div class="flex flex-col"><span class="text-[6px] text-zinc-500 uppercase font-black">PnL @ Stop</span><span class="text-[11px] font-bold blur-val tracking-tighter ${pnlStopUp ? 'up' : 'down'}">${format(parseFloat(a.pnlAtStop))}</span></div>
                         </div>
-                        <span class="text-[8px] text-zinc-700 font-bold mb-0.5 uppercase">Qty: ${a.qty}</span>
                     </div>
                 `;
                 grid.appendChild(card);
