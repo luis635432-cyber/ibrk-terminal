@@ -3,204 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DOTS ELITE TERMINAL V4.1</title>
+    <title>DOTS ELITE V4.2 PRO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@600;800&display=swap" rel="stylesheet">
     <style>
         body { background: #000; color: #fff; font-family: 'JetBrains Mono', monospace; overflow-x: hidden; }
-        .card-container { position: relative; width: 100%; overflow: hidden; margin-bottom: 12px; border-radius: 24px; }
-        .card-wrapper { display: flex; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); width: 200%; }
-        .card-face { width: 50%; background: #0a0a0a; border: 1px solid #1a1a1a; padding: 22px; border-radius: 24px; }
-        
         .up { color: #00ff88; }
         .down { color: #ff3b3b; }
-        .header-glass { background: rgba(0,0,0,0.95); backdrop-filter: blur(20px); border-bottom: 1px solid #1a1a1a; }
+        .card-container { position: relative; width: 100%; overflow: hidden; margin-bottom: 16px; border-radius: 28px; }
+        .card-wrapper { display: flex; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); width: 200%; }
+        .card-face { width: 50%; background: #0c0c0c; border: 1.5px solid #1a1a1a; padding: 24px; border-radius: 28px; }
         
-        .badge-stop { font-size: 11px; padding: 4px 10px; border-radius: 8px; font-weight: 800; border: 1px solid; display: flex; align-items: center; gap: 4px; }
-        .vcp-tag { font-size: 9px; padding: 2px 8px; border-radius: 6px; background: #7c3aed; color: #fff; font-weight: bold; }
-        .free-tag { font-size: 9px; padding: 2px 8px; border-radius: 6px; background: #1e3a8a; color: #60a5fa; font-weight: bold; border: 1px solid #2563eb; }
+        /* Tipografía Mejorada */
+        .val-primary { font-size: 18px; font-weight: 800; tracking-tighter; }
+        .val-secondary { font-size: 15px; font-weight: 700; }
+        .label-mini { font-size: 9px; font-weight: 800; color: #555; text-transform: uppercase; letter-spacing: 0.1em; }
         
-        /* Barra de Progreso 2R */
-        .progress-bg { background: #1a1a1a; height: 8px; border-radius: 4px; width: 100%; margin: 12px 0; overflow: hidden; }
-        .progress-fill { background: linear-gradient(90deg, #7c3aed, #00ff88); height: 100%; transition: width 0.8s ease-out; }
+        .progress-bg { background: #1a1a1a; height: 12px; border-radius: 6px; margin: 15px 0; overflow: hidden; }
+        .progress-fill { background: linear-gradient(90deg, #7c3aed, #00ff88); height: 100%; transition: width 0.8s; }
         
-        .filter-btn { font-size: 10px; font-weight: 800; padding: 10px 20px; border-radius: 14px; border: 1px solid #222; color: #555; transition: 0.2s; }
+        .filter-btn { font-size: 11px; font-weight: 800; padding: 12px 18px; border-radius: 16px; border: 1.5px solid #222; color: #666; transition: 0.2s; }
         .filter-btn.active { background: #fff; color: #000; border-color: #fff; }
-        
-        .blur-val { transition: filter 0.3s; }
-        body.is-private .blur-val { filter: blur(10px); }
     </style>
 </head>
 <body class="pb-24">
 
-    <div class="header-glass sticky top-0 z-50 p-6">
+    <div class="sticky top-0 z-50 bg-black/95 backdrop-blur-xl p-6 border-b border-zinc-900">
         <div class="max-w-md mx-auto">
-            <div class="flex justify-between items-start mb-6">
-                <div>
-                    <p class="text-[9px] text-zinc-600 uppercase tracking-[0.3em] mb-1 flex items-center gap-2 font-bold">
-                        <i data-lucide="shield-check" class="w-3 h-3 text-purple-500"></i> Dots Elite V4.1
-                    </p>
-                    <div class="flex items-baseline gap-2">
-                        <h1 id="nav" class="text-3xl font-bold tracking-tighter">0.0000</h1>
-                        <span id="roi" class="text-sm font-bold up">+0.00%</span>
-                    </div>
-                </div>
-                <button onclick="document.body.classList.toggle('is-private')" class="p-3 bg-zinc-900 border border-zinc-800 rounded-2xl text-zinc-500">
-                    <i data-lucide="eye-off" class="w-5 h-5"></i>
-                </button>
-            </div>
-            
-            <div class="grid grid-cols-2 gap-3 mb-6">
-                <div class="bg-zinc-900/40 p-4 rounded-2xl border border-white/5 text-right">
-                    <p class="text-[8px] text-zinc-500 uppercase tracking-widest mb-1">Open P&L (E5)</p>
-                    <h2 id="totalPnLOpen" class="text-xl font-bold blur-val tracking-tighter">---</h2>
-                </div>
-                <div class="bg-zinc-900/40 p-4 rounded-2xl border border-white/5 text-right">
-                    <p class="text-[8px] text-zinc-500 uppercase tracking-widest mb-1">Realized (F5)</p>
-                    <h2 id="totalPnLClosed" class="text-xl font-bold blur-val tracking-tighter">---</h2>
+            <div class="flex justify-between items-center mb-6">
+                <h1 id="nav" class="text-3xl font-black tracking-tighter">0.0000</h1>
+                <div class="flex gap-2">
+                    <button onclick="setFilter('ALL')" id="btn-ALL" class="filter-btn active">ALL</button>
+                    <button onclick="setFilter('RISK')" id="btn-RISK" class="filter-btn">RISK</button>
+                    <button onclick="setFilter('FREE')" id="btn-FREE" class="filter-btn">FREE ROLL</button>
                 </div>
             </div>
-
-            <div class="flex justify-between items-center bg-zinc-950 p-1 rounded-2xl border border-zinc-900">
-                <button onclick="setFilter('ALL')" id="btn-ALL" class="filter-btn active flex-1">ALL</button>
-                <button onclick="setFilter('RISK')" id="btn-RISK" class="filter-btn flex-1">RISK</button>
-                <button onclick="setFilter('FREE')" id="btn-FREE" class="filter-btn flex-1">FREE</button>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-zinc-900/30 p-4 rounded-2xl border border-white/5">
+                    <p class="label-mini mb-1">Unrealized (E5)</p>
+                    <h2 id="totalPnLOpen" class="text-xl font-black up">+$0.00</h2>
+                </div>
+                <div class="bg-zinc-900/30 p-4 rounded-2xl border border-white/5">
+                    <p class="label-mini mb-1 text-right">Realized (F5)</p>
+                    <h2 id="totalPnLClosed" class="text-xl font-black up text-right">+$0.00</h2>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="max-w-md mx-auto px-4 mt-6">
-        <div id="grid" class="space-y-3"></div>
-    </div>
+    <div id="grid" class="max-w-md mx-auto px-4 mt-6 space-y-4"></div>
 
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbySVTBHw-NBoN7m_7P-aQroeeahMXqpg4VSMW7hUDtDEbOC7KkmfGvFsUKOtZqyC9Gz/exec";
-        let currentData = null;
         let activeFilter = 'ALL';
+        let currentData = null;
 
         function setFilter(f) {
             activeFilter = f;
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`btn-${f}`).classList.add('active');
-            if(currentData) renderGrid(currentData);
+            render();
         }
 
         async function refresh() {
             try {
                 const res = await fetch(API_URL);
                 currentData = await res.json();
-                renderGrid(currentData);
-            } catch (e) { console.error("Error cargando datos:", e); }
+                render();
+            } catch (e) { console.error(e); }
         }
 
-        function toggleSwap(id) {
-            const wrapper = document.getElementById(`wrapper-${id}`);
-            wrapper.style.transform = wrapper.style.transform === 'translateX(-50%)' ? 'translateX(0)' : 'translateX(-50%)';
-        }
-
-        function renderGrid(data) {
-            // Cabecera
-            document.getElementById('nav').innerText = data.nav;
-            document.getElementById('roi').innerText = `+${data.roi}%`;
-            
-            const openVal = parseFloat(data.totalPnLOpen);
-            const closedVal = parseFloat(data.totalPnLClosed);
-            const netVal = openVal + closedVal;
-            const format = (v) => (v >= 0 ? '+$' : '-$') + Math.abs(v).toLocaleString(undefined, {minimumFractionDigits: 2});
-            
-            document.getElementById('totalPnLOpen').innerText = format(openVal);
-            document.getElementById('totalPnLOpen').className = `text-xl font-bold blur-val ${openVal >= 0 ? 'up' : 'down'}`;
-            document.getElementById('totalPnLClosed').innerText = format(closedVal);
-            document.getElementById('totalPnLClosed').className = `text-xl font-bold blur-val ${closedVal >= 0 ? 'up' : 'down'}`;
+        function render() {
+            if(!currentData) return;
+            document.getElementById('nav').innerText = currentData.nav;
+            document.getElementById('totalPnLOpen').innerText = `+$${currentData.totalPnLOpen}`;
+            document.getElementById('totalPnLClosed').innerText = `+$${currentData.totalPnLClosed}`;
 
             const grid = document.getElementById('grid');
             grid.innerHTML = "";
 
-            // FILTRO DE POSICIONES
-            const filtered = data.activos.filter(a => {
-                const isFree = a.isFreeRoll === true; 
-                if(activeFilter === 'RISK') return !isFree;
-                if(activeFilter === 'FREE') return isFree;
+            const filtered = currentData.activos.filter(a => {
+                if(activeFilter === 'RISK') return !a.isFreeRoll;
+                if(activeFilter === 'FREE') return a.isFreeRoll;
                 return true;
             });
 
             filtered.forEach((a, idx) => {
-                const totalUp = parseFloat(a.pnlCash) >= 0;
                 const entry = parseFloat(a.entry);
                 const current = parseFloat(a.currentPrice);
                 const initialStop = parseFloat(a.initialStop);
                 const stopDist = parseFloat(a.stopDist);
                 
-                // LÓGICA MINERVINI: 2R Progress
-                const initialRisk = entry - initialStop;
-                const target2R = entry + (initialRisk * 2);
+                // CÁLCULO SEGURO TARGET 2R (MINERVINI)
+                const riskPerShare = Math.abs(entry - initialStop);
+                const target2R = entry + (riskPerShare * 2);
                 let progress = ((current - entry) / (target2R - entry)) * 100;
                 progress = Math.min(Math.max(progress, 0), 100);
-                
-                const isVCP = stopDist < 3.5;
-                const isFree = a.isFreeRoll === true;
 
-                const card = document.createElement('div');
-                card.className = "card-container";
-                card.innerHTML = `
-                    <div id="wrapper-${idx}" class="card-wrapper" onclick="toggleSwap(${idx})">
+                const div = document.createElement('div');
+                div.className = "card-container";
+                div.innerHTML = `
+                    <div id="w-${idx}" class="card-wrapper" onclick="toggle(${idx})">
                         <div class="card-face">
-                            <div class="flex justify-between items-start">
+                            <div class="flex justify-between items-start mb-5">
                                 <div>
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <h3 class="font-black text-xl tracking-tighter">${a.ticker}</h3>
-                                        ${isVCP ? '<span class="vcp-tag">VCP 🔥</span>' : ''}
-                                        ${isFree ? '<span class="free-tag">🛡️ FREE</span>' : ''}
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <h3 class="text-2xl font-black tracking-tighter">${a.ticker}</h3>
+                                        ${stopDist < 3.5 ? '<span class="bg-purple-600 text-white text-[10px] px-2 py-0.5 rounded-md font-black">VCP 🔥</span>' : ''}
+                                        ${a.isFreeRoll ? '<span class="bg-blue-600/20 text-blue-400 border border-blue-500/30 text-[10px] px-2 py-0.5 rounded-md font-black">🛡️ FREE ROLL</span>' : ''}
                                     </div>
-                                    <span class="text-xs font-bold ${totalUp ? 'up' : 'down'} blur-val">PnL: $${Math.abs(a.pnlCash)}</span>
+                                    <p class="text-base font-bold ${parseFloat(a.pnlCash) >= 0 ? 'up' : 'down'}">+$${a.pnlCash}</p>
                                 </div>
                                 <div class="text-right">
-                                    <div class="font-bold text-xl tracking-tighter">$${a.currentPrice}</div>
-                                    <div class="text-xs font-bold ${totalUp ? 'up' : 'down'}">${a.pnlPercent}%</div>
+                                    <p class="text-2xl font-black tracking-tighter">$${a.currentPrice}</p>
+                                    <p class="text-sm font-bold ${parseFloat(a.pnlPercent) >= 0 ? 'up' : 'down'}">${a.pnlPercent}%</p>
                                 </div>
                             </div>
                             
-                            <div class="mt-5 pt-5 border-t border-white/5 flex justify-between items-center">
-                                <div class="flex items-center gap-4">
-                                    <div class="badge-stop ${stopDist < 3.5 ? 'down' : 'up'} border-current">
-                                        <i data-lucide="shield" class="w-3 h-3"></i> ${a.stopDist}%
-                                    </div>
-                                    <div class="flex flex-col">
-                                        <span class="text-[7px] text-zinc-600 uppercase font-black tracking-widest">@Stop</span>
-                                        <span class="text-[12px] font-bold blur-val ${parseFloat(a.pnlAtStop) >= 0 ? 'up' : 'down'}">${format(parseFloat(a.pnlAtStop))}</span>
+                            <div class="flex justify-between items-end mt-6 pt-5 border-t border-zinc-900/50">
+                                <div class="flex gap-5">
+                                    <div class="border-2 border-current px-4 py-1.5 rounded-xl text-base font-black ${stopDist < 3.5 ? 'down' : 'up'}">🛡️ ${stopDist}%</div>
+                                    <div>
+                                        <p class="label-mini">@STOP</p>
+                                        <p class="val-secondary ${parseFloat(a.pnlAtStop) >= 0 ? 'up' : 'down'}">$${a.pnlAtStop}</p>
                                     </div>
                                 </div>
-                                <i data-lucide="chevron-right" class="w-4 h-4 text-zinc-800"></i>
+                                <i data-lucide="chevron-right" class="w-6 h-6 text-zinc-800"></i>
                             </div>
                         </div>
-                        
-                        <div class="card-face bg-zinc-900/30">
-                            <div class="flex justify-between items-end mb-2">
-                                <p class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Profit Target (2R)</p>
-                                <p class="text-lg font-black text-purple-400">${progress.toFixed(0)}%</p>
+
+                        <div class="card-face bg-zinc-900/10">
+                            <p class="label-mini mb-1">Target Venta 50% (2R)</p>
+                            <div class="flex justify-between items-end">
+                                <h4 class="text-2xl font-black text-purple-400">${progress.toFixed(0)}%</h4>
+                                <p class="text-sm font-bold text-zinc-500">Obj: $${target2R.toFixed(2)}</p>
                             </div>
                             <div class="progress-bg"><div class="progress-fill" style="width: ${progress}%"></div></div>
-                            <div class="flex justify-between text-[9px] font-bold mb-4">
-                                <span class="text-zinc-600">Entry: $${entry}</span>
-                                <span class="text-purple-400">Target: $${target2R.toFixed(2)}</span>
-                            </div>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div class="bg-black p-2 rounded-xl border border-white/5">
-                                    <p class="text-[7px] text-zinc-600 uppercase mb-1">Stop Inicial</p>
-                                    <p class="text-xs font-bold text-zinc-400">$${initialStop}</p>
+                            
+                            <div class="grid grid-cols-2 gap-3 mt-4">
+                                <div class="bg-black/40 p-3 rounded-2xl border border-white/5">
+                                    <p class="label-mini">Entrada (F)</p>
+                                    <p class="val-secondary">$${entry}</p>
                                 </div>
-                                <div class="bg-black p-2 rounded-xl border border-white/5 text-right">
-                                    <p class="text-[7px] text-zinc-600 uppercase mb-1">Riesgo Inicial</p>
-                                    <p class="text-xs font-bold text-red-500">-$${initialRisk.toFixed(2)}</p>
+                                <div class="bg-black/40 p-3 rounded-2xl border border-white/5">
+                                    <p class="label-mini">Stop Inicial (P)</p>
+                                    <p class="val-secondary text-zinc-400">$${initialStop}</p>
+                                </div>
+                                <div class="bg-black/40 p-3 rounded-2xl border border-white/5 col-span-2">
+                                    <p class="label-mini">Riesgo Inicial de la Posición</p>
+                                    <p class="val-secondary text-red-500">-$${Math.abs(entry - initialStop).toFixed(2)} por acción</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 `;
-                grid.appendChild(card);
+                grid.appendChild(div);
             });
             lucide.createIcons();
+        }
+
+        function toggle(i) {
+            const w = document.getElementById(`w-${i}`);
+            w.style.transform = w.style.transform === 'translateX(-50%)' ? 'translateX(0)' : 'translateX(-50%)';
         }
 
         refresh();
