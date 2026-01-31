@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DOTS ELITE TERMINAL V4</title>
+    <title>DOTS ELITE TERMINAL V4.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body { background: #000; color: #fff; font-family: 'JetBrains Mono', monospace; overflow-x: hidden; }
         .card-container { position: relative; width: 100%; overflow: hidden; margin-bottom: 12px; border-radius: 24px; }
-        .card-wrapper { display: flex; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); width: 200%; }
+        .card-wrapper { display: flex; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); width: 200%; }
         .card-face { width: 50%; background: #0a0a0a; border: 1px solid #1a1a1a; padding: 22px; border-radius: 24px; }
         
         .up { color: #00ff88; }
@@ -19,30 +19,31 @@
         
         .badge-stop { font-size: 11px; padding: 4px 10px; border-radius: 8px; font-weight: 800; border: 1px solid; display: flex; align-items: center; gap: 4px; }
         .vcp-tag { font-size: 9px; padding: 2px 8px; border-radius: 6px; background: #7c3aed; color: #fff; font-weight: bold; }
+        .free-tag { font-size: 9px; padding: 2px 8px; border-radius: 6px; background: #1e3a8a; color: #60a5fa; font-weight: bold; border: 1px solid #2563eb; }
         
-        /* Barra de Progreso Minervini */
-        .progress-bg { background: #1a1a1a; height: 6px; border-radius: 3px; width: 100%; margin: 8px 0; overflow: hidden; }
-        .progress-fill { background: linear-gradient(90deg, #7c3aed, #00ff88); height: 100%; transition: width 0.5s; }
+        /* Barra de Progreso 2R */
+        .progress-bg { background: #1a1a1a; height: 8px; border-radius: 4px; width: 100%; margin: 12px 0; overflow: hidden; }
+        .progress-fill { background: linear-gradient(90deg, #7c3aed, #00ff88); height: 100%; transition: width 0.8s ease-out; }
         
-        .filter-btn { font-size: 10px; font-weight: 800; padding: 8px 16px; border-radius: 12px; border: 1px solid #222; color: #555; }
+        .filter-btn { font-size: 10px; font-weight: 800; padding: 10px 20px; border-radius: 14px; border: 1px solid #222; color: #555; transition: 0.2s; }
         .filter-btn.active { background: #fff; color: #000; border-color: #fff; }
         
         .blur-val { transition: filter 0.3s; }
         body.is-private .blur-val { filter: blur(10px); }
     </style>
 </head>
-<body class="pb-20">
+<body class="pb-24">
 
     <div class="header-glass sticky top-0 z-50 p-6">
         <div class="max-w-md mx-auto">
             <div class="flex justify-between items-start mb-6">
                 <div>
-                    <p class="text-[9px] text-zinc-600 uppercase tracking-[0.3em] mb-1 flex items-center gap-2">
-                        <i data-lucide="zap" class="w-3 h-3 text-yellow-400"></i> Elite Terminal V4
+                    <p class="text-[9px] text-zinc-600 uppercase tracking-[0.3em] mb-1 flex items-center gap-2 font-bold">
+                        <i data-lucide="shield-check" class="w-3 h-3 text-purple-500"></i> Dots Elite V4.1
                     </p>
                     <div class="flex items-baseline gap-2">
-                        <h1 id="nav" class="text-3xl font-bold tracking-tighter">---</h1>
-                        <span id="roi" class="text-sm font-bold up">---</span>
+                        <h1 id="nav" class="text-3xl font-bold tracking-tighter">0.0000</h1>
+                        <span id="roi" class="text-sm font-bold up">+0.00%</span>
                     </div>
                 </div>
                 <button onclick="document.body.classList.toggle('is-private')" class="p-3 bg-zinc-900 border border-zinc-800 rounded-2xl text-zinc-500">
@@ -52,7 +53,7 @@
             
             <div class="grid grid-cols-2 gap-3 mb-6">
                 <div class="bg-zinc-900/40 p-4 rounded-2xl border border-white/5 text-right">
-                    <p class="text-[8px] text-zinc-500 uppercase tracking-widest mb-1">Unrealized (E5)</p>
+                    <p class="text-[8px] text-zinc-500 uppercase tracking-widest mb-1">Open P&L (E5)</p>
                     <h2 id="totalPnLOpen" class="text-xl font-bold blur-val tracking-tighter">---</h2>
                 </div>
                 <div class="bg-zinc-900/40 p-4 rounded-2xl border border-white/5 text-right">
@@ -61,22 +62,16 @@
                 </div>
             </div>
 
-            <div class="flex justify-between items-center">
-                <div class="flex flex-col">
-                    <p class="text-[9px] text-zinc-600 uppercase tracking-widest mb-1">Net Portfolio</p>
-                    <h2 id="totalCombined" class="text-lg font-bold blur-val tracking-tighter">---</h2>
-                </div>
-                <div class="flex gap-1">
-                    <button onclick="setFilter('ALL')" id="btn-ALL" class="filter-btn active">ALL</button>
-                    <button onclick="setFilter('RISK')" id="btn-RISK" class="filter-btn">RISK</button>
-                    <button onclick="setFilter('FREE')" id="btn-FREE" class="filter-btn">FREE</button>
-                </div>
+            <div class="flex justify-between items-center bg-zinc-950 p-1 rounded-2xl border border-zinc-900">
+                <button onclick="setFilter('ALL')" id="btn-ALL" class="filter-btn active flex-1">ALL</button>
+                <button onclick="setFilter('RISK')" id="btn-RISK" class="filter-btn flex-1">RISK</button>
+                <button onclick="setFilter('FREE')" id="btn-FREE" class="filter-btn flex-1">FREE</button>
             </div>
         </div>
     </div>
 
     <div class="max-w-md mx-auto px-4 mt-6">
-        <div id="grid" class="space-y-2"></div>
+        <div id="grid" class="space-y-3"></div>
     </div>
 
     <script>
@@ -96,7 +91,7 @@
                 const res = await fetch(API_URL);
                 currentData = await res.json();
                 renderGrid(currentData);
-            } catch (e) { console.error(e); }
+            } catch (e) { console.error("Error cargando datos:", e); }
         }
 
         function toggleSwap(id) {
@@ -105,11 +100,12 @@
         }
 
         function renderGrid(data) {
-            document.getElementById('nav').innerText = data.nav || '0.0000';
-            document.getElementById('roi').innerText = `+${data.roi || '0.00'}%`;
+            // Cabecera
+            document.getElementById('nav').innerText = data.nav;
+            document.getElementById('roi').innerText = `+${data.roi}%`;
             
-            const openVal = parseFloat(data.totalPnLOpen) || 0;
-            const closedVal = parseFloat(data.totalPnLClosed) || 0;
+            const openVal = parseFloat(data.totalPnLOpen);
+            const closedVal = parseFloat(data.totalPnLClosed);
             const netVal = openVal + closedVal;
             const format = (v) => (v >= 0 ? '+$' : '-$') + Math.abs(v).toLocaleString(undefined, {minimumFractionDigits: 2});
             
@@ -117,14 +113,13 @@
             document.getElementById('totalPnLOpen').className = `text-xl font-bold blur-val ${openVal >= 0 ? 'up' : 'down'}`;
             document.getElementById('totalPnLClosed').innerText = format(closedVal);
             document.getElementById('totalPnLClosed').className = `text-xl font-bold blur-val ${closedVal >= 0 ? 'up' : 'down'}`;
-            document.getElementById('totalCombined').innerText = format(netVal);
-            document.getElementById('totalCombined').className = `text-xl font-bold blur-val ${netVal >= 0 ? 'up' : 'down'}`;
 
             const grid = document.getElementById('grid');
             grid.innerHTML = "";
 
+            // FILTRO DE POSICIONES
             const filtered = data.activos.filter(a => {
-                const isFree = (a.isFreeRoll === true || a.isFreeRoll === "true" || a.isFreeRoll === "FREE ROLL" || a.isFreeRoll === "CERRADA");
+                const isFree = a.isFreeRoll === true; 
                 if(activeFilter === 'RISK') return !isFree;
                 if(activeFilter === 'FREE') return isFree;
                 return true;
@@ -132,51 +127,47 @@
 
             filtered.forEach((a, idx) => {
                 const totalUp = parseFloat(a.pnlCash) >= 0;
-                const pnlPercent = parseFloat(a.pnlPercent);
-                const stopDist = parseFloat(a.stopDist);
                 const entry = parseFloat(a.entry);
                 const current = parseFloat(a.currentPrice);
                 const initialStop = parseFloat(a.initialStop);
+                const stopDist = parseFloat(a.stopDist);
                 
-                // LÓGICA MINERVINI 2R
-                const riskDist = entry - initialStop;
-                const target2R = entry + (riskDist * 2);
-                const progressPercent = Math.min(Math.max(((current - entry) / (target2R - entry)) * 100, 0), 100);
+                // LÓGICA MINERVINI: 2R Progress
+                const initialRisk = entry - initialStop;
+                const target2R = entry + (initialRisk * 2);
+                let progress = ((current - entry) / (target2R - entry)) * 100;
+                progress = Math.min(Math.max(progress, 0), 100);
                 
                 const isVCP = stopDist < 3.5;
-                const isFree = (a.isFreeRoll === true || a.isFreeRoll === "true" || a.isFreeRoll === "FREE ROLL" || a.isFreeRoll === "CERRADA");
+                const isFree = a.isFreeRoll === true;
 
                 const card = document.createElement('div');
                 card.className = "card-container";
-                card.onclick = () => toggleSwap(idx);
                 card.innerHTML = `
-                    <div id="wrapper-${idx}" class="card-wrapper">
+                    <div id="wrapper-${idx}" class="card-wrapper" onclick="toggleSwap(${idx})">
                         <div class="card-face">
-                            <div class="flex justify-between items-start mb-4">
+                            <div class="flex justify-between items-start">
                                 <div>
                                     <div class="flex items-center gap-2 mb-1">
-                                        <h3 class="font-bold text-xl tracking-tight">${a.ticker}</h3>
+                                        <h3 class="font-black text-xl tracking-tighter">${a.ticker}</h3>
                                         ${isVCP ? '<span class="vcp-tag">VCP 🔥</span>' : ''}
-                                        ${isFree ? '<span class="text-[8px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded border border-blue-500/20 font-bold">FREE</span>' : ''}
+                                        ${isFree ? '<span class="free-tag">🛡️ FREE</span>' : ''}
                                     </div>
-                                    <span class="text-xs font-bold ${totalUp ? 'up' : 'down'} blur-val uppercase tracking-tighter">PnL: $${Math.abs(parseFloat(a.pnlCash)).toFixed(2)}</span>
+                                    <span class="text-xs font-bold ${totalUp ? 'up' : 'down'} blur-val">PnL: $${Math.abs(a.pnlCash)}</span>
                                 </div>
                                 <div class="text-right">
                                     <div class="font-bold text-xl tracking-tighter">$${a.currentPrice}</div>
                                     <div class="text-xs font-bold ${totalUp ? 'up' : 'down'}">${a.pnlPercent}%</div>
                                 </div>
                             </div>
-                            <div class="mt-4 pt-5 border-t border-white/5 flex justify-between items-center">
-                                <div class="flex items-center gap-5">
-                                    <div class="badge-stop ${stopDist < 3 ? 'down' : 'up'} border-current">
+                            
+                            <div class="mt-5 pt-5 border-t border-white/5 flex justify-between items-center">
+                                <div class="flex items-center gap-4">
+                                    <div class="badge-stop ${stopDist < 3.5 ? 'down' : 'up'} border-current">
                                         <i data-lucide="shield" class="w-3 h-3"></i> ${a.stopDist}%
                                     </div>
                                     <div class="flex flex-col">
-                                        <span class="text-[8px] text-zinc-600 uppercase font-black tracking-widest">Risk</span>
-                                        <span class="text-[12px] font-bold blur-val text-zinc-300">-$${Math.abs(parseFloat(a.riskCash)).toFixed(2)}</span>
-                                    </div>
-                                    <div class="flex flex-col">
-                                        <span class="text-[8px] text-zinc-600 uppercase font-black tracking-widest">@Stop</span>
+                                        <span class="text-[7px] text-zinc-600 uppercase font-black tracking-widest">@Stop</span>
                                         <span class="text-[12px] font-bold blur-val ${parseFloat(a.pnlAtStop) >= 0 ? 'up' : 'down'}">${format(parseFloat(a.pnlAtStop))}</span>
                                     </div>
                                 </div>
@@ -184,24 +175,24 @@
                             </div>
                         </div>
                         
-                        <div class="card-face bg-zinc-900/20">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Objetivo Venta 50% (2R)</span>
-                                <span class="text-[10px] font-bold text-purple-400 tracking-widest">${progressPercent.toFixed(0)}%</span>
+                        <div class="card-face bg-zinc-900/30">
+                            <div class="flex justify-between items-end mb-2">
+                                <p class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Profit Target (2R)</p>
+                                <p class="text-lg font-black text-purple-400">${progress.toFixed(0)}%</p>
                             </div>
-                            <div class="progress-bg"><div class="progress-fill" style="width: ${progressPercent}%"></div></div>
-                            <div class="flex justify-between text-[10px] font-bold mb-6">
+                            <div class="progress-bg"><div class="progress-fill" style="width: ${progress}%"></div></div>
+                            <div class="flex justify-between text-[9px] font-bold mb-4">
                                 <span class="text-zinc-600">Entry: $${entry}</span>
                                 <span class="text-purple-400">Target: $${target2R.toFixed(2)}</span>
                             </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="bg-black/40 p-3 rounded-xl border border-white/5">
-                                    <p class="text-[7px] text-zinc-600 uppercase mb-1">Stop Inicial (P)</p>
-                                    <p class="text-sm font-bold text-zinc-400">$${initialStop}</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="bg-black p-2 rounded-xl border border-white/5">
+                                    <p class="text-[7px] text-zinc-600 uppercase mb-1">Stop Inicial</p>
+                                    <p class="text-xs font-bold text-zinc-400">$${initialStop}</p>
                                 </div>
-                                <div class="bg-black/40 p-3 rounded-xl border border-white/5">
+                                <div class="bg-black p-2 rounded-xl border border-white/5 text-right">
                                     <p class="text-[7px] text-zinc-600 uppercase mb-1">Riesgo Inicial</p>
-                                    <p class="text-sm font-bold text-red-500">-$${riskDist.toFixed(2)}</p>
+                                    <p class="text-xs font-bold text-red-500">-$${initialRisk.toFixed(2)}</p>
                                 </div>
                             </div>
                         </div>
@@ -211,6 +202,7 @@
             });
             lucide.createIcons();
         }
+
         refresh();
         setInterval(refresh, 30000);
     </script>
