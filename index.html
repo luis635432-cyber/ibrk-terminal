@@ -3,46 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DOTS ELITE v5.0</title>
+    <title>DOTS ELITE v5.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body { background: #000; color: #fff; font-family: -apple-system, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
         .up { color: #00ff88; } .down { color: #ff3b3b; }
-        
-        .master-card {
-            background: linear-gradient(145deg, rgba(25,25,25,0.9) 0%, rgba(10,10,10,1) 100%);
-            border: 1px solid rgba(255,255,255,0.08);
-            backdrop-filter: blur(20px);
-            border-radius: 32px;
-            padding: 24px;
-        }
-
-        .gold-text { color: #FFD700; text-shadow: 0 0 15px rgba(255,215,0,0.3); }
+        .master-card { background: #0d0d0d; border: 1.5px solid #1a1a1a; border-radius: 32px; padding: 22px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .gold-text { color: #FFD700; text-shadow: 0 0 10px rgba(255,215,0,0.2); }
         .cian-text { color: #00f2ff; }
-
         .progress-bar { background: rgba(255,255,255,0.05); height: 8px; border-radius: 4px; overflow: hidden; margin: 8px 0; }
         .progress-fill { background: linear-gradient(90deg, #7c3aed, #00f2ff); height: 100%; transition: width 1s ease-in-out; }
-
-        .filter-container { background: rgba(255,255,255,0.05); padding: 4px; border-radius: 14px; display: flex; gap: 4px; }
-        .filter-btn { font-size: 10px; font-weight: 800; padding: 8px 16px; border-radius: 11px; color: #555; transition: 0.3s; flex: 1; }
-        .filter-btn.active { background: rgba(255,255,255,0.1); color: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
-
+        .filter-btn { font-size: 10px; font-weight: 800; padding: 8px 12px; border-radius: 12px; color: #555; border: 1px solid #1a1a1a; flex: 1; transition: 0.3s; }
+        .filter-btn.active { background: #fff; color: #000; border-color: #fff; }
         .card-face { width: 50%; background: #0d0d0d; border: 2px solid #1a1a1a; padding: 22px; border-radius: 30px; box-sizing: border-box; }
     </style>
 </head>
 <body class="pb-24">
 
-    <div class="p-4 max-w-md mx-auto sticky top-0 z-50 bg-black/80 backdrop-blur-lg">
-        <div class="master-card mb-6 shadow-2xl">
-            <div class="flex justify-between items-start mb-6">
-                <div class="w-3/5">
-                    <p class="text-[9px] text-zinc-500 font-black uppercase tracking-[0.15em] mb-1">Net Profit Portfolio</p>
-                    <h1 id="netProfit" class="text-3xl font-black up tracking-tighter leading-none">$0,00</h1>
+    <div class="p-4 max-w-md mx-auto sticky top-0 z-50 bg-black/90 backdrop-blur-xl">
+        <div class="master-card mb-6">
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div>
+                    <p class="text-[9px] text-zinc-600 font-black uppercase tracking-widest mb-1">Net Profit Portfolio</p>
+                    <h1 id="netProfit" class="text-3xl font-black up tracking-tighter leading-none">0,00 $</h1>
                 </div>
-                <div class="w-2/5 text-right pl-4 border-l border-white/5">
-                    <p class="text-[9px] text-zinc-500 font-black uppercase tracking-[0.15em] mb-1">MOIC</p>
-                    <h1 id="moic" class="text-3xl font-black gold-text tracking-tighter leading-none">0,00x</h1>
+                <div class="text-right border-l border-white/5 pl-4">
+                    <p class="text-[9px] text-zinc-600 font-black uppercase tracking-widest mb-1">MOIC Multiple</p>
+                    <h1 id="moic" class="text-3xl font-black gold-text tracking-tighter leading-none">1,00x</h1>
                     <div class="progress-bar"><div id="moicBar" class="progress-fill" style="width: 0%"></div></div>
                     <p id="roiText" class="text-[11px] font-bold cian-text tracking-tight">---</p>
                 </div>
@@ -50,20 +38,20 @@
             
             <div class="grid grid-cols-2 gap-4 pt-5 border-t border-white/5">
                 <div>
-                    <p class="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">Unrealized</p>
-                    <p id="pnlOpen" class="text-base font-bold up leading-none">---</p>
+                    <p class="text-[8px] text-zinc-600 font-black uppercase mb-1">Unrealized</p>
+                    <p id="unrealized" class="text-base font-bold up leading-none">0,00 $</p>
                 </div>
                 <div class="text-right">
-                    <p class="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">Realized</p>
-                    <p id="pnlClosed" class="text-base font-bold up leading-none">---</p>
+                    <p class="text-[8px] text-zinc-600 font-black uppercase mb-1">Realized</p>
+                    <p id="realized" class="text-base font-bold up leading-none">0,00 $</p>
                 </div>
             </div>
         </div>
 
-        <div class="filter-container mx-auto w-full max-w-[280px]">
-            <button onclick="setF('ALL')" id="b-ALL" class="filter-btn active uppercase tracking-widest">All</button>
-            <button onclick="setF('RISK')" id="b-RISK" class="filter-btn uppercase tracking-widest">Risk</button>
-            <button onclick="setF('FREE')" id="b-FREE" class="filter-btn uppercase tracking-widest">Free</button>
+        <div class="flex gap-2 w-full max-w-[300px] mx-auto">
+            <button onclick="setF('ALL')" id="b-ALL" class="filter-btn active uppercase">All</button>
+            <button onclick="setF('RISK')" id="b-RISK" class="filter-btn uppercase">Risk</button>
+            <button onclick="setF('FREE')" id="b-FREE" class="filter-btn uppercase">Free Roll</button>
         </div>
     </div>
 
@@ -73,11 +61,11 @@
         const API = "https://script.google.com/macros/s/AKfycbySVTBHw-NBoN7m_7P-aQroeeahMXqpg4VSMW7hUDtDEbOC7KkmfGvFsUKOtZqyC9Gz/exec";
         let mode = 'ALL', store = null;
 
-        // Formateador Institucional: $1.443,68
-        function fI(n, symbol = "$") {
+        // Formato: 1.443,68 $
+        function fI(n, symbol = " $") {
             let num = parseFloat(n) || 0;
             let formatted = num.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            return symbol === "x" ? formatted.replace('.', ',') + "x" : symbol + formatted;
+            return symbol === "x" ? formatted + "x" : formatted + symbol;
         }
 
         function setF(f) { 
@@ -92,18 +80,17 @@
                 const r = await fetch(API); 
                 store = await r.json(); 
                 render(); 
-            } catch(e) { console.log("API Error"); } 
+            } catch(e) {} 
         }
 
         function render() {
             if(!store) return;
             document.getElementById('netProfit').innerText = fI(store.netProfit);
-            document.getElementById('pnlOpen').innerText = fI(store.unrealized);
-            document.getElementById('pnlClosed').innerText = fI(store.realized);
+            document.getElementById('unrealized').innerText = fI(store.unrealized);
+            document.getElementById('realized').innerText = fI(store.realized);
             document.getElementById('moic').innerText = fI(store.navMoic, "x");
             document.getElementById('roiText').innerText = store.roiText;
 
-            // Barra MOIC: 1.0 (0%) a 2.0 (100%)
             let prog = ((parseFloat(store.navMoic) - 1) / (2 - 1)) * 100;
             document.getElementById('moicBar').style.width = Math.min(Math.max(prog, 0), 100) + "%";
 
@@ -148,8 +135,8 @@
                             <div class="flex justify-between items-end mt-3"><h4 class="text-3xl font-black text-purple-400">${pProg.toFixed(0)}%</h4><p class="text-[13px] font-black up tracking-tighter">OBJ: ${fI(target)}</p></div>
                             <div class="progress-bar"><div class="progress-fill" style="width:${pProg}%"></div></div>
                             <div class="grid grid-cols-2 gap-3 mt-4">
-                                <div class="bg-black/60 p-3 rounded-2xl border border-white/5"><p class="text-[8px] text-zinc-600 font-black uppercase mb-1 tracking-widest">Entrada (F)</p><p class="text-base font-black">${fI(entry)}</p></div>
-                                <div class="bg-black/60 p-3 rounded-2xl border border-white/5 text-right"><p class="text-[8px] text-zinc-600 font-black uppercase mb-1 tracking-widest">Stop (P)</p><p class="text-base font-black text-zinc-400">${fI(initStop)}</p></div>
+                                <div class="bg-black/60 p-3 rounded-2xl border border-white/5"><p class="text-[8px] text-zinc-600 font-black uppercase mb-1">Entrada (F)</p><p class="text-base font-black">${fI(entry)}</p></div>
+                                <div class="text-right bg-black/60 p-3 rounded-2xl border border-white/5"><p class="text-[8px] text-zinc-600 font-black uppercase mb-1">Stop (P)</p><p class="text-base font-black text-zinc-400">${fI(initStop)}</p></div>
                             </div>
                         </div>
                     </div>
@@ -158,11 +145,7 @@
             lucide.createIcons();
         }
 
-        function toggle(i) {
-            const w = document.getElementById('w-'+i);
-            w.style.transform = w.style.transform === 'translateX(-50%)' ? 'translateX(0)' : 'translateX(-50%)';
-        }
-
+        function toggle(i) { const w = document.getElementById('w-'+i); w.style.transform = w.style.transform === 'translateX(-50%)' ? 'translateX(0)' : 'translateX(-50%)'; }
         load(); setInterval(load, 30000);
     </script>
 </body>
